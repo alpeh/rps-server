@@ -1,0 +1,19 @@
+{
+  "name": "rps-server",
+  "version": "1.0.0",
+  "description": "Rock Paper Scissors Server",
+  "main": "./src/index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alpeh/rps-server.git"
+  },
+  "keywords": [
+    "game"
+  ],
+  "author": "roberto.hernandez",
+  "license": "ISC"
+}
