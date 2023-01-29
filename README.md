@@ -29,7 +29,7 @@ Provides state of a given match
 ## Play Hand
 Allows given user to enter hand for match
 ###Request
-`Get /game/match/details/?matchId=&userId=&hand=`
+`Get /game/match/play/?matchId=&userId=&hand=`
 ###Response
 	Content-Type: application/json
 	{"matchId":1, "success": false, "errorMessage": ""}

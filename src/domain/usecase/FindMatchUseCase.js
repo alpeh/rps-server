@@ -5,25 +5,27 @@ class FindMatchUseCase
     findMatch(userId)
     {
         var game = this.gameGateway.getGame();
-        var match = game.findMatchByUser(userId);
-        var matchFound = match !== undefined;
+        var matchId = game.findPending(userId);
+        var matchFound = matchId !== undefined;
         if(matchFound) {
-            return match.matchId;
+            return matchId;
         }
 
-        var matchId = game.createMatch(userId);
+        matchId = game.createNewMatch(userId);
+        matchFound = matchId !== undefined;
+        if(matchFound) {
+            return matchId;
+        }
+
+        game.queUser(userId);
         this.gameGateway.saveGame(game);
-        return matchId;
+        return "";
     }
 
     constructor()
     {
         this.gameGateway = new GameGateway();
     }
-
-    static usersSearching = [];
-    static matches = [];
-    static matchIdCounter = 0;
 }
 
 module.exports = FindMatchUseCase;

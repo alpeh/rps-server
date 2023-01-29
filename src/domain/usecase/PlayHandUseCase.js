@@ -2,25 +2,39 @@ const GameGateway = require('./../Gateway/GameGateway');
 
 class PlayHandUseCase
 {
-    playHand(userId, hand)
+    playHand(matchId, userId, hand)
     {
-        var matchResults = { matchId: "", winnerId: "", state: ""};
+        var response = { matchId: "", success: false, errorMessage: ""};
         var game = this.gameGateway.getGame();
-        var match = game.findMatchByUser(userId);
-        if(match === undefined) {
-            matchResults;
+        var matchExists = game.isUserMatch(matchId, userId);
+        if(!matchExists) {
+            response.errorMessage = "Match does not exist";
+            return response;
         }
 
-        matchResults.matchId = match.matchId;
-        game.setHand(match.matchId, userId, hand);
+        var isMatchOver = game.isMatchOver(matchId);
+        response.matchId = matchId;
+        if(isMatchOver) {
+            response.errorMessage = "Match is over";
+            return response;
+        }
+
+        var handPreviouslyPlayed = game.hasPlayedHand(matchId, userId);
+        if(handPreviouslyPlayed) {
+            response.errorMessage = "Hand previously played";
+            return response;
+        }
+
+        let handInvalid = !game.isValidHand(hand);
+        if(handInvalid) {
+            response.errorMessage = `${hand} is invalid hand`;
+            return response;
+        }
+
+        game.setHand(matchId, userId, hand);
         this.gameGateway.saveGame(game);
-        if(game.isMatchCompleted(match.matchId)) {
-            matchResults.winnerId = game.getWinnerId(match.matchId);
-            matchResults.state = game.getMatchState(match.matchId);
-            return matchResults;
-        }
-
-        return matchResults;
+        response.success = true;
+        return response;
     }
 
     constructor()
