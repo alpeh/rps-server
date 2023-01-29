@@ -1,6 +1,7 @@
 const http = require('http');
 const urlHelper = require('url');
-const FindMatchUseCase = require('./domain/usecase/FindMatchUseCase.js')
+const FindMatchUseCase = require('./Domain/Usecase/FindMatchUseCase');
+const PlayHandUseCase = require('./Domain/UseCase/PlayHandUseCase');
 const hostname = '127.0.0.1';   
 const port = 3000;
 
@@ -23,7 +24,10 @@ const server = http.createServer((req, res) => {
         content = `{matchId: "${matchId}"}`;
     }
     else if(url.includes("/game/play-hand")) {
-        content = '{matchId: "", userId: "", hand: ""}';
+        var hand = urlData.query.hand;
+        var playHandUseCase = new PlayHandUseCase();
+        var matchResponse = playHandUseCase.playHand(userId, hand);
+        content = `{matchId: "${matchResponse.matchId}", winnerId: "${matchResponse.winnerId}", state:"${matchResponse.state}"}`;
     }
     else {
         statusCode = 404;

@@ -1,36 +1,24 @@
+const GameGateway = require('./../Gateway/GameGateway');
+
 class FindMatchUseCase
 {
     findMatch(userId)
     {
-        var userMatch = FindMatchUseCase.matches.find(e => e.userA == userId || e.userB == userId);
-        var userMatchFound = userMatch !== undefined;
-        if(userMatchFound) {
-            return userMatch.matchId;
-        }
-
-        var oponentId = FindMatchUseCase.usersSearching.find(oponentId => oponentId != userId);
-        var foundOponent = oponentId !== undefined;
-        if(foundOponent) {
-            var match = {
-                userA: userId,
-                userB: oponentId,
-                matchId: FindMatchUseCase.matchIdCounter++,
-            };
-            FindMatchUseCase.matches.push(match);
-            FindMatchUseCase.usersSearching = FindMatchUseCase.usersSearching.filter(id => id != userId && id != oponentId);
+        var game = this.gameGateway.getGame();
+        var match = game.findMatchByUser(userId);
+        var matchFound = match !== undefined;
+        if(matchFound) {
             return match.matchId;
         }
-        else if(userId === "" || userId === undefined) {
-            return "";
-        }
 
-        FindMatchUseCase.usersSearching.push(userId);
-        return "";
+        var matchId = game.createMatch(userId);
+        this.gameGateway.saveGame(game);
+        return matchId;
     }
 
     constructor()
     {
-
+        this.gameGateway = new GameGateway();
     }
 
     static usersSearching = [];
